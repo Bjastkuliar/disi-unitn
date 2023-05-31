@@ -42,27 +42,48 @@ public class Utils {
 
     public static long[] determinant(long[][][] matrix){
         for (int k=0; k < matrix.length-2; k++) {
-			long pivot= getPivot(matrix[k][k]);
-			int r=k;
-			for (int i=k+1; i < matrix.length; i++) {
-                long newPivot = getPivot(matrix[i][k]);
-				if ( newPivot > pivot) {
-					pivot= newPivot;
-					r=i;
-				}
-			}
-			if (r != k) {
-                long[][] tmp = copyRow(matrix[k]);
-                matrix[k]=matrix[r];
-                matrix[r]= tmp;
+            if(matrix[k][k][0]==0){
+                printMatrix(matrix);
+                long pivot= getPivot(matrix[k][k]);
+                int r=k;
+                for (int i=k+1; i < matrix.length; i++) {
+                    long newPivot = getPivot(matrix[i][k]);
+                    if ( newPivot > pivot) {
+                        pivot= newPivot;
+                        r=i;
+                    }
+                }
+
+                //row swap
+                if (r != k) {
+                    long[][] tmp = copyRow(matrix[k]);
+                    matrix[k]=matrix[r];
+                    matrix[r]= tmp;
+                }
             }
-			for (int j=k+1; j< matrix.length; j++){
-				matrix[j][k][0]=matrix[j][k][0]/matrix[k][k][0];
-                matrix[j][k][1]=matrix[j][k][1]/matrix[k][k][1];
-				matrix[j][j][0]=matrix[j][j][0]-matrix[j][k][0]*matrix[k][j][0];
-                matrix[j][j][1]=matrix[j][j][1]-matrix[j][k][1]*matrix[k][j][1];
-			}
+            //gauss elimination
+            for (int i=k+1; i< matrix.length; i++){
+                matrix[i][k][0]=matrix[i][k][0]/matrix[k][k][0];
+                if(matrix[i][k][0]/matrix[k][k][0]!=0){
+                    matrix[i][k][1]=matrix[i][k][1]/matrix[k][k][1];
+                }
+                for(int j=k+1;j<matrix.length;j++){
+                    matrix[i][j][0]=matrix[i][j][0]-matrix[i][k][0]*matrix[k][j][0];
+                    if(matrix[i][j][0]-matrix[i][k][0]*matrix[k][j][0]!=0){
+                        matrix[i][j][1]=matrix[i][j][1]-matrix[i][k][1]*matrix[k][j][1];
+                    }
+                }
+            }
+            for(int i = 1; i< matrix.length;i++){
+                for(int j = 0; j< k;j++){
+                    if(i!=j){
+                        matrix[i][j][0]=0;
+                        matrix[i][j][1]=1;
+                    }
+                }
+            }
         }
+
 
         long[] determinant = new long[2];
         determinant[0]=matrix[0][0][0];

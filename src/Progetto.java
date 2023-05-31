@@ -27,13 +27,14 @@ public class Progetto {
 		// Qui potete inserire il vostro codice, modificando lo stub esistente.
 		long[][][] matrix = Utils.readMatrix("test/mat/matrice-001.txt");
 		long[] risulato = new long[2];
-		if(matrix!=null) {
+		/*if(matrix!=null) {
 			Utils.printMatrix(matrix);
-			risulato = Utils.determinant(matrix);
+			Useless.determinant(matrix);
+			//risulato = Utils.determinant(matrix);
 			System.out.println(Arrays.toString(risulato));
 			System.out.print("Soluzione: ");
 			Utils.printSampleSolution("test/det/det_matrice-001.txt");
-		}
+		}*/
 		double risultato2 = 0;
 		double[][] matrix2 = Test.readMatrix("test/mat/matrice-001.txt");
 		if(matrix2!=null) {

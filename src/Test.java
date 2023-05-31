@@ -37,32 +37,55 @@ public class Test {
     }
 
     public static double determinant(double[][] matrix){
-        for (int k=0; k < matrix.length-2; k++) {
-            double pivot= Math.abs(matrix[k][k]);
-            int r=k;
-            for (int i=k+1; i < matrix.length; i++) {
-                double newPivot = Math.abs(matrix[i][k]);
-                if ( newPivot > pivot) {
-                    pivot= newPivot;
-                    r=i;
+        int rowSwap = 0;
+        for (int k=0; k < matrix.length-1; k++) {
+            if(matrix[k][k]==0){//pivot search
+                double pivot= Math.abs(matrix[k][k]);
+                int r=k;
+                for (int i=k+1; i < matrix.length; i++) {
+                    double newPivot = Math.abs(matrix[i][k]);
+                    if ( newPivot > pivot) {
+                        pivot= newPivot;
+                        r=i;
+                    }
+                }
+                if(pivot==0){
+                    System.err.println("Matrice singolare");
+                }
+                if (r != k) {//swap row
+                    double[] tmp = matrix[k];
+                    matrix[k]=matrix[r];
+                    matrix[r]= tmp;
+                    rowSwap++;
                 }
             }
-            if (r != k) {
-                double[] tmp = matrix[k];
-                matrix[k]=matrix[r];
-                matrix[r]= tmp;
+            for (int i=k+1; i< matrix.length; i++){//gauss elimination
+                matrix[i][k]=matrix[i][k]/matrix[k][k];
+                for(int j= k+1; j<matrix.length;j++){
+                    matrix[i][j]=matrix[i][j]-matrix[i][k]*matrix[k][j];
+                }
             }
-            for (int j=k+1; j< matrix.length; j++){
-                matrix[j][k]=matrix[j][k]/matrix[k][k];
-                matrix[j][j]=matrix[j][j]-matrix[j][k]*matrix[k][j];
+            for(int i = 1; i<matrix.length;i++){
+                for(int j = 0;j<k+1;j++){
+                    if(i!=j){
+                        matrix[i][j]=0;
+                    }
+                }
             }
+
+        }
+        if(matrix[matrix.length-1][matrix.length-1]==0){
+            System.err.println("Matrice Singolare");
         }
 
-        double determinant = matrix[0][0];
+        printMatrix(matrix);
 
+        double determinant = matrix[0][0];
         for (int i = 1; i<matrix.length;i++){
             determinant *= matrix[i][i];
         }
+        System.out.println("swaps"+rowSwap);
+        determinant*=Math.pow(-1,rowSwap);
         if(determinant == 0){
             System.err.println("La matrice è singolare");
         }
