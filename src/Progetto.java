@@ -26,7 +26,12 @@ public class Progetto {
 		long[][][] matrix = Utils.readMatrix(fileName);
 		long[] risulato = new long[2];
 		if(matrix!=null) {
-			risulato = Utils.determinant(matrix);
+			try {
+				risulato = Utils.determinant(matrix);
+			} catch (Exception e){
+				System.err.println(e.getMessage());
+				risulato[1] = 1;
+			}
 		}
 		return risulato;
 	}

@@ -3,14 +3,22 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Scanner;
 
+/**The class is responsible for handling most of the project logic. It is meant to act as a "helper-class", not a standalone one.
+ *
+ * @author Alberto Nicoletti (aka Bjastkuliar)
+ * */
 public class Utils {
+    /** This method is responsible for reading the input file (containing the matrix in the specified format)
+     * and for converting it into a matrix of long[]
+     *
+     * @param fileName the path-file where the input matrix is to be found*/
     public static long[][][] readMatrix(String fileName){
         long [][][] matrix;
         Scanner scanner = null;
         int size = 0;
         try{
             scanner = new Scanner(new File(fileName));
-            size = Integer.parseInt(scanner.next());
+            size = Integer.parseInt(scanner.next()); //reading the size from the first line of the file
         } catch (FileNotFoundException e){
             e.printStackTrace();
         }
@@ -24,14 +32,17 @@ public class Utils {
                 }
             }
         }
-
         if(size != 0){
             return matrix;
         } else { return null;}
 
     }
 
-    public static long[] determinant(long[][][] matrix){
+    /** This method performs the various transformations in order to calculate the determinant,
+     * additionally it replaces all elements underneath the diagonal with [0,1]
+     *
+     * @param matrix the matrix outputted by readMatrix*/
+    public static long[] determinant(long[][][] matrix) throws Exception {
         int rowSwap = 0;
         for (int k=0; k < matrix.length-1; k++) {
             if(matrix[k][k][0]==0){
@@ -53,10 +64,10 @@ public class Utils {
                     rowSwap++;
                 }
 
+                /*if the pivot is 0 the program throws an exception because
+                 *it is of no use keep evaluating the matrix*/
                 if(pivot==0){
-                    System.err.println("Matrice singolare");
-                    System.out.println("determinante = " + 0 + "/" + 1);
-                    System.exit(0);
+                    throw new Exception("Matrix is singular!");
                 }
             }
             //gauss elimination
@@ -67,6 +78,7 @@ public class Utils {
                 }
             }
 
+            //replace all cells below the diagonal with 0
             for(int i = 1; i< matrix.length;i++){
                 for(int j = 0; j< k;j++){
                     if(i!=j){
@@ -82,9 +94,14 @@ public class Utils {
         for (int i = 1; i<matrix.length;i++){
             determinant = multiply(determinant,matrix[i][i]);
         }
+
         if(determinant[0] == 0||determinant[1]==0){
-            System.err.println("La matrice è singolare");
+            throw new Exception("Matrix is singular!");
         }
+
+        /*correct the determinant sign according to the number of row swaps
+        * if the number of row swaps is uneven, the sign has to be inverted
+        * (i.e. multiplied by -1)*/
         determinant= multiply(determinant, new long[]{(long)Math.pow(-1,rowSwap),1});
 
         return determinant;
@@ -120,21 +137,24 @@ public class Utils {
         return reduce(temp);
     }
 
-    /*Swaps numerator and denominator
-    * If the numerator is 0, the whole fraction is set as 0/1*/
+    /**Swaps numerator and denominator
+    * If the numerator is 0, the whole fraction is set as 0/1
+    * If the denominator is 0, null is returned (it is a divide by 0 error)
+     *
+     * @param num the fraction to be inverted*/
     private static long [] invert(long[] num){
         long[] invert = new long[2];
-        if(num[0]!=0){//0/2
+        if(num[0]!=0){
             invert[0] = num[1];
             invert[1] = num[0];
-        } else {//2/0
+        } else {
             invert = null;
             System.err.println("Divide by 0");
         }
         return invert;
     }
 
-    //Reduces the fraction to its least
+    //Reduces the fraction to its least components
     private static long[] reduce(long[] fraction){
         long numerator, denominator;
         if(fraction[0]<0&&fraction[1]<0){
@@ -172,11 +192,20 @@ public class Utils {
         return a * (b / gcd(a, b));
     }
 
+    /**Retrieves the absolute value of the components of the fraction number first,
+     * then it converts them to double and lastly performs the division. This is needed
+     * in order to avoid the case in which the fraction gets cast to 0, due to the denominator
+     * being larger of the numerator, leading to a "Divide by 0" error later on.
+     *
+     * @param number the matrix cell to be converted to a pivot*/
     private static double getPivot (long[] number ){
         double absNumerator = (double) Math.abs(number[0]), absDenominator = (double) Math.abs(number[1]);
         return absNumerator /absDenominator;
     }
 
+    /**Copies a row of the matrix to a new one.
+     *
+     * @param row the row to be copied*/
     private static long[][] copyRow (long[][] row){
         long [][] tmp = new long [row.length][2];
         for(int i = 0; i<row.length;i++){
@@ -186,6 +215,14 @@ public class Utils {
         return tmp;
     }
 
+
+    /**Performs the insertion of a fractional number in the long[][] matrix,
+     * by splitting the input fractional long into numerator and denominator.
+     *
+     * @param matrix the matrix where the number has to be inserted
+     * @param i the row index of the cell in which the number has to be inserted
+     * @param j the column index of the cell in which the number has to be inserted
+     * @param scanner the scanner reading the input file*/
     private static void insertNumber(long[][][] matrix, int i, int j, Scanner scanner){
         String number = scanner.next();
         String[] splitNumber = number.split("/");
@@ -194,47 +231,6 @@ public class Utils {
             matrix[i][j][q] = Integer.parseInt(num);
             q++;
         }
-    }
-
-    public static long[] getSampleSolution(int matrixNum){
-        String filePath, fileFolder = "test/det/det_matrice-", fileExt = ".txt", solution;
-
-        if(matrixNum<10){
-            filePath = fileFolder+"00"+matrixNum+fileExt;
-        } else if ( matrixNum<100){
-            filePath = fileFolder+"0"+matrixNum+fileExt;
-        } else {
-            filePath = fileFolder+matrixNum+fileExt;
-        }
-
-        try {
-            Scanner scanner = new Scanner(new File(filePath));
-            solution = scanner.next();
-            String[] split = solution.split("/");
-            return new long[]{Long.parseLong(split[0]),Long.parseLong(split[1])};
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static long[] runSampleMatrix(int matrixNum){
-        String filePath, fileFolder = "test/mat/matrice-", fileExt = ".txt";
-
-        if(matrixNum<10){
-            filePath = fileFolder+"00"+matrixNum+fileExt;
-        } else if ( matrixNum<100){
-            filePath = fileFolder+"0"+matrixNum+fileExt;
-        } else {
-            filePath = fileFolder+matrixNum+fileExt;
-        }
-
-        long[][][] matrix = Utils.readMatrix(filePath);
-        if(matrix!= null){
-            return Utils.determinant(matrix);
-        }
-        return null;
-
     }
 
     /**Method for printing a solution from the given file-path
