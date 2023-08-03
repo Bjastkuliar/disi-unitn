@@ -40,7 +40,7 @@ public class Progetto {
 		public static void main(String[] args) {
 			// Eseguiamo un test
 			long[] d;
-			d = determinante("test.txt");
+			d = determinante("test/mat/matrice-010.txt");
 			System.out.println("determinante = " + d[0] + "/" + d[1]);
 		}
 }

@@ -45,16 +45,18 @@ public class Utils {
                     }
                 }
 
-                if(pivot==0){
-                    System.err.println("Matrice singolare");
-                }
-
                 //row swap
                 if (r != k) {
                     long[][] tmp = copyRow(matrix[k]);
                     matrix[k]=matrix[r];
                     matrix[r]= tmp;
                     rowSwap++;
+                }
+
+                if(pivot==0){
+                    System.err.println("Matrice singolare");
+                    System.out.println("determinante = " + 0 + "/" + 1);
+                    System.exit(0);
                 }
             }
             //gauss elimination
@@ -122,10 +124,10 @@ public class Utils {
     * If the numerator is 0, the whole fraction is set as 0/1*/
     private static long [] invert(long[] num){
         long[] invert = new long[2];
-        if(num[0]!=0){
+        if(num[0]!=0){//0/2
             invert[0] = num[1];
             invert[1] = num[0];
-        } else {
+        } else {//2/0
             invert = null;
             System.err.println("Divide by 0");
         }
@@ -171,7 +173,8 @@ public class Utils {
     }
 
     private static double getPivot (long[] number ){
-        return Math.abs(number[0]/number[1]);
+        double absNumerator = (double) Math.abs(number[0]), absDenominator = (double) Math.abs(number[1]);
+        return absNumerator /absDenominator;
     }
 
     private static long[][] copyRow (long[][] row){
@@ -260,6 +263,4 @@ public class Utils {
         }
         System.out.println(stringBuilder);
     }
-
-
 }

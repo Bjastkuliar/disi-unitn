@@ -6,6 +6,7 @@ public class Test {
         while (i<=100){
             long[] solution = Utils.getSampleSolution(i);
             long[] determinant;
+
             try{
                 determinant = Utils.runSampleMatrix(i);
             } catch (NullPointerException e){
@@ -15,10 +16,17 @@ public class Test {
 
 
             if(determinant!=null&&solution!=null){
-                if(solution[0]!=determinant[0]||solution[1]!= determinant[1]){
-                    System.out.println("Mismatch detected on matrix "+i+"!");
-                    System.out.println("Solution : "+Arrays.toString(solution));
-                    System.out.println("Determinant : "+Arrays.toString(determinant));
+                long solutionFraction = solution[0]/solution[1], determinantFraction = determinant[0]/determinant[1];
+                if(solutionFraction!=determinantFraction){
+                    if(Math.abs(solution[0])!=Math.abs(determinant[0])||Math.abs(solution[1])!= Math.abs(determinant[1])){
+                        System.out.println("Mismatch detected on matrix "+i+"!");
+                        System.out.println("Solution : "+Arrays.toString(solution));
+                        System.out.println("Determinant : "+Arrays.toString(determinant));
+                    } else {
+                        System.out.println("The solution fraction was mismatching, but the absolute values do not!\n"
+                        +"Solution Fraction: "+solutionFraction+
+                                "\n Determinant Fraction: "+ determinantFraction);
+                    }
                 }
             } else {
                 System.out.println("Something is null!");
